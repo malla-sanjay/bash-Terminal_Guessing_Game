@@ -2,8 +2,6 @@
 
 #Select 3 band members logic
 selectBandMembers() {
-    while true
-    do
     #displaying band member options
     echo "Select 3 of from the 5 band members of previous bands"
     echo "
@@ -17,9 +15,21 @@ selectBandMembers() {
     |KC  |Kurt Cobain      |
     +====+=================+
     "
-    echo "Use the following format: "
-    echo "Members: FM DH KC (for Freddie Mercury, Debbie Harry, and Kurt Cobain)"
-    echo
+
+    #Adding transition delay between menu and example
+    sleep 1
+
+    #selection example provided to the user
+    echo "
+    +-------------+----------------------------------------+
+    |  Use the following format:                           |
+    |   Members: FM DH KC                                  |
+    | (for Freedie Mercury, Debbie Harry and Kurt Cobain)  |
+    +------------------------------------------------------+
+    "
+
+    while true
+    do
     read -p "Members: " memb1 memb2 memb3 memb4; echo
 
     #validating member selection
@@ -52,36 +62,73 @@ selectBandMembers() {
         member3=$memb3
         echo "You selected:"
         break
+    
+    
+    #when more than 3 inputs (three or more inputs)
+    elif [ ! -z "$memb4" ] 
+    then
+        #error message
+        echo "
+    +----------+--------------------------------+
+    | ERROR!!! |       ┐(T w T)┌                |
+    +----------+--------------------------------|
+    |   Please enter only three band members    |
+    |   try again   ~(T 3 T)~	                |
+    +-------------------------------------------+
+        "
 
     #when less than 3 correct member code (members repeating)
     elif [ $totalFound -lt 3 -a $totalFound -gt 0 ]
     then
-        echo "Please enter code of 3 different band members"
-        echo "try again  \(O w O)/"
+    #error message
+        echo "
+    +----------+--------------------------------------+
+    | ERROR!!! |       ┐(T w T)┌                      |
+    +----------+--------------------------------------|
+    |  Please enter code of 3 different band members  |
+    |  try again  \(O w O)/                           |
+    +-------------------------------------------------+
+        "
         continue
 
-    #when more than 4 inputs
-    elif [ ! -z "$memb4" ] 
-    then
-        echo "Please enter only three band members"
-        echo "try again   ~(T 3 T)~"
-
-    #when 0 member codes are correct
+    #when 0 member codes are correct (invalid codes)
     else
-        echo "Please use the given codes to select band members!! (T w T)"
+    #error message
+    echo "
+    +----------+----------------------------------------------------+
+    | ERROR!!! |         ┐(T w T)┌                                  |
+    +----------+----------------------------------------------------|
+    | Please use the given codes to select band members!! (T w T)   |
+    +---------------------------------------------------------------+
+    "
         continue
     fi
     done
 }
 
-#faking loading for asthetics
+#Transition between function callings (for asthetics)
+transition() {
+sleep 0.5
+echo -n "Loading next segment: ";sleep 0.5
+echo -n "##"; sleep 0.5
+echo -n "##"; sleep 0.5
+echo -n "###"; sleep 0.5
+echo -n "#"; sleep 0.5
+echo -n "#"; sleep 0.5
+echo -n "#"; sleep 0.5
+echo -e "\n\n"
+}
+
+#faking loading for transition (for asthetics)
 loading() {
     sleep 1
     echo -n .
     sleep 1 
     echo -n .
     sleep 1 
-    echo -en ."\n\n"
+    echo -n .
+    sleep 1 
+    echo -en ."\n"
 }
 
 #Choose one member to view info
@@ -91,8 +138,14 @@ chooseOneMember() {
     do 
         if [ -z $member ]
         then
-            echo -e "\nPlease select from one of the option"
-            echo -e "Using the respective numbers (1,2,3)\n"
+            echo "
+    +----------+-----------------------------+
+    | ERROR!!! |       ┐( ^ w ^)┌            |
+    +----------+-----------------------------|
+    | Please select from one of the option   |
+    | Using the respective numbers (1,2,3)   |
+    +----------------------------------------+
+            "
         else
             echo -en "\n\nYou've selected $member, Displaying $member file"
             loading
@@ -100,16 +153,30 @@ chooseOneMember() {
             #error message for non existing files
             if [ "$member" == "DH" ] || [ "$member" == "KC" ] 
             then
-                echo "File on this band member is unavailable"
+                echo "
+    +----------+--------------------------------+
+    | ALERT!!! |         ┐(T w T)┌              |
+    +----------+--------------------------------|
+    | File on this band member is unavailable   |
+    +-------------------------------------------+
+                "
                 echo -n "Taking user back to Band selection step"
+                #calling fake loading function for transition delay
                 loading
 
                 #returning to mainfunction
                 mainFunction
-
+                
+                #to exit the select loop
                 break
             else
-                cat $member; echo
+                #reading the member file
+                cat $member;
+
+                #Ask the user for program continuity using function
+                continueOrNot
+
+                #exiting the select loop
                 break
             fi
         fi
@@ -119,9 +186,7 @@ chooseOneMember() {
 #Best band determination logic
 bestBandGuess() {
     bestBandCorrect=false
-    #Guessing best band till correct band is selected
-    until [ $bestBandCorrect == true ] 
-    do
+
     #best band input
     echo "Please guess my favourite band using their respective code."
     echo "  
@@ -135,33 +200,56 @@ bestBandGuess() {
     |NIR |Nirvana  |
     +====+=========+
     "
+
+    #Guessing best band till correct band is selected
+    until [ $bestBandCorrect == true ] 
+    do
+    
+    #Taking band code input
     read -p "your guess: " bestBand; echo
 
     #Checking the guess
     case $bestBand in
         #correct band code and answer
         QUE)
-            echo "YES!! QUEEN is the best band!"
-            echo
-            echo "Queen was a popular british rock band of the 70s." 
-            echo "they popularized glam rock and encorperated genres"
-            echo "ranging from heavy metal to subtle jazz"
-            echo
+            echo "
+    +====================================================+
+    | YES!! QUEEN is the best band!      \(^ w ^)/       |
+    |                                                    |
+    | Queen was a popular british rock band of the 70s.  |
+    | they popularized glam rock and encorperated genres |
+    | ranging from heavy metal to subtle jazz            |
+    +====================================================+
+            "
+            #changing best band correct status to true
             bestBandCorrect=true
         ;;
         
         #correct band code but incorrect answer
         NIR | BEA | BLO | AD)
-            echo "They are a good band, but not the best one"
-            echo "Guess again!!  ~(^ W ^)~"
+            echo "
+    +----------+----------------------------------+
+    | ALERT!!! |         ┐(^ w ^)┌                |
+    +----------+----------------------------------|
+    | They are a good band, but not the best one  |
+    | Guess again!!  ~(^ W ^)~                    |
+    +---------------------------------------------+
+            "
             echo
         ;;
 
         #incorrect band code
         *)
-            echo "Plesase use the appropirate CODE assigned to the"
-            echo "respective bands and try again!"
-            echo
+            echo "
+    +----------+--------------------------------+
+    | ERROR!!! |       ┐( T w T)┌               |
+    +----------+--------------------------------|
+    | Plesase use the appropirate CODE assigned |
+    | to the respective bands and try again!    |
+    |                                           |
+    | Example: BEA (for Beatles)                |
+    +-------------------------------------------+
+            "
         ;;
     esac
     done
@@ -178,8 +266,18 @@ greetings() {
 
 #continue or not input
 continueOrNot() {
-    echo -e "\nDo you want to continue?"
-    echo "[yes|no] options available"
+    #transition delay
+    sleep 2
+    #Continue or not message
+    echo "
+    +======================================================+
+    |  Do you want to continue this program?!  (T w T)     |
+    |                                                      |
+    |  [ yes | no ] options available	                   |
+    |                                                      |
+    +======================================================+
+    "
+    #taking user input
     read -p "select option: " contd
 }
 
@@ -187,8 +285,13 @@ continueOrNot() {
 mainFunction() {
     while true
     do
+        #default program continue status
+        contd="yes"
+
         #Best band guessing
         bestBandGuess 
+        #adding transition delay
+        transition
 
         #default 3 selected band
         member1=""
@@ -200,31 +303,52 @@ mainFunction() {
 
         #Choose 1 member to display information
         chooseOneMember $member1 $member2 $member3
-
-        #default continue status
-        contd="yes"
-
-        #taking user input for contuinity
-        continueOrNot
         
         #program continuity
-        if [ $contd == "no" ] 
+        #dont continue the program
+        if [ "$contd" == "no" ] 
         then
             break
-        elif [ $contd == "yes" ]
+        
+        #continue program
+        elif [ "$contd" == "yes" ]
         then
             clear
             continue
+
+        #error continue option (make user choose again)
         else 
-            echo "only 'yes' and 'no' are allowed"
+            echo "
+    +----------+--------------------------+
+    | ALERT!!! |      ┐(^ w ^)┌           |
+    +----------+--------------------------|
+    | only 'yes' and 'no' are allowed     |
+    +-------------------------------------+
+            "
             continueOrNot
         fi
-    done
+    done   
+}
 
-    #End note
-    echo 
-    echo "This program ends here  \(^ w ^)/"
-    echo "Thank you for your time, have a nice day!!" 
+#seperate end section function
+endSection (){
+    #end note
+        echo "
+    +==============================================+
+    |  This program ends here  \(^ w ^)/           |
+    |                                              |
+    |  Thank you for your time, have a nice day!!  |
+    |                                              |
+    +==============================================+
+    " 
+}
+
+superFunction (){
+    #calling main function
+    mainFunction
+
+    #to display end note
+    endSection
 }
 
 #password checking
@@ -236,12 +360,12 @@ passwordCheck (){
     do 
         echo "Enter the program password ( $chance remaining ):"
         read -s check 
-        if [ $check == $password ] 
+        if [ "$check" == $password ] 
         then
             #greet the user first
             greetings
             #call main program
-            mainFunction
+            superFunction
             break
         fi
         #count incrementation
@@ -250,9 +374,16 @@ passwordCheck (){
         #check no of attempts
         if [ $counter == 3 ] 
         then
-        echo
-        echo 'Your chance ends   ┐(^ W ^ )┌'
-        echo 'Try again with correct password!'
+
+        #no of attempts exceeded terminating the program
+        echo '
+    +==========================================+
+    |  Your chance ends   ┐(^ W ^ )┌	       |
+    |                                          |
+    |  Try again with correct password!        |
+    |                                          |
+    +==========================================+
+        '
         fi
     done
 }
@@ -267,10 +398,20 @@ then
         passwordCheck
     elif [ ! -z $3 ]
     then
-        echo "This program accepts ID and Name parameters only  ┗(T o T)┓"
-        echo
+        echo "
+    +----------+-----------------------------------------+
+    | ERROR!!! |       ┗(╬T _ T)┓                        |
+    +----------+-----------------------------------------|
+    | This program accepts ID and Name parameters ONLY!! |
+    +----------------------------------------------------+
+        "
     fi
 else
-    echo "This program accepts ID and Name parameter  (╬T_T)"
-    echo
+    echo "
+    +----------+-----------------------------------+
+    | ERROR!!! |       ┗(T o T)┓                   |
+    +----------+-----------------------------------|
+    | This program accepts ID and Name parameter   |
+    +----------------------------------------------+
+    "
 fi
